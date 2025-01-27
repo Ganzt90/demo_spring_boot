@@ -1,0 +1,26 @@
+name: Analyze Dependencies
+on: [push, pull_request]
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17' # Versión de Java de tu proyecto
+
+      - name: Run OWASP Dependency Check
+        uses: dependency-check/standalone@v6
+        with:
+          project: "demo_spring_boot"
+          scan: "."
+
+      - name: Upload Dependency-Check report
+        uses: actions/upload-artifact@v3
+        with:
+          name: dependency-check-report
+          path: owasp/dependency-check-report.html
