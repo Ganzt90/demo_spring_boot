@@ -1,26 +1,28 @@
-name: Analyze Dependencies
-on: [push, pull_request]
+
+on: [push]
+
 jobs:
-  dependency-check:
+  depchecktest:
     runs-on: ubuntu-latest
+    name: depecheck_test
     steps:
-      - name: Check out code
-        uses: actions/checkout@v3
-
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build project with Maven
+        run: mvn clean install
+      - name: Depcheck
+        uses: dependency-check/Dependency-Check_Action@main
+        id: Depcheck
         with:
-          distribution: 'temurin'
-          java-version: '17' # Versión de Java de tu proyecto
-
-      - name: Run OWASP Dependency Check
-        uses: dependency-check/standalone@v6
+          project: 'test'
+          path: '.'
+          format: 'HTML'
+          out: 'reports' # this is the default, no need to specify unless you wish to override it
+          args: >
+            --failOnCVSS 7
+            --enableRetired
+      - name: Upload Test results
+        uses: actions/upload-artifact@master
         with:
-          project: "demo_spring_boot"
-          scan: "."
-
-      - name: Upload Dependency-Check report
-        uses: actions/upload-artifact@v3
-        with:
-          name: dependency-check-report
-          path: owasp/dependency-check-report.html
+           name: Depcheck report
+           path: ${{github.workspace}}/reports
