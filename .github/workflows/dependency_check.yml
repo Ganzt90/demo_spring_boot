@@ -19,6 +19,8 @@ jobs:
       - name: Depcheck
         uses: dependency-check/Dependency-Check_Action@main
         id: Depcheck
+        env:
+          JAVA_HOME: /opt/jdk
         with:
           project: 'demo_spring_boot'
           path: '.'
